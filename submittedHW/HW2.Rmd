@@ -1,0 +1,271 @@
+---
+title: "HW2"
+author: "Zachary Wright"
+date: "2/21/2022"
+output: html_document
+---
+
+#######Code starts on line 165########
+
+output:
+  html_document: 
+    toc: yes
+    number_sections: yes
+  html_notebook:
+    toc: yes
+    number_sections: yes
+editor_options:
+  chunk_output_type: inline
+---
+
+
+<style type="text/css">
+
+div#TOC li {
+    list-style:none;
+    background-image:none;
+    background-repeat:none;
+    background-position:0;
+}
+h1.title {
+  font-size: 24px;
+  color: DarkRed;
+  text-align: center;
+}
+h4.author { /* Header 4 - and the author and data headers use this too  */
+    font-size: 18px;
+  font-family: "Times New Roman", Times, serif;
+  color: DarkRed;
+  text-align: center;
+}
+h4.date { /* Header 4 - and the author and data headers use this too  */
+  font-size: 18px;
+  font-family: "Times New Roman", Times, serif;
+  color: DarkBlue;
+  text-align: center;
+}
+h1 { /* Header 3 - and the author and data headers use this too  */
+    font-size: 22px;
+    font-family: "Times New Roman", Times, serif;
+    color: darkred;
+    text-align: center;
+}
+h2 { /* Header 3 - and the author and data headers use this too  */
+    font-size: 18px;
+    font-family: "Times New Roman", Times, serif;
+    color: navy;
+    text-align: left;
+}
+
+h3 { /* Header 3 - and the author and data headers use this too  */
+    font-size: 15px;
+    font-family: "Times New Roman", Times, serif;
+    color: navy;
+    text-align: left;
+}
+
+h4 { /* Header 4 - and the author and data headers use this too  */
+    font-size: 18px;
+    font-family: "Times New Roman", Times, serif;
+    color: darkred;
+    text-align: left;
+}
+</style>
+
+```{r setup, include=FALSE}
+# code chunk specifies whether the R code, warnings, and output 
+# will be included in the output files.
+if (!require("tidyverse")) {
+   install.packages("tidyverse")
+   library(tidyverse)
+}
+if (!require("knitr")) {
+   install.packages("knitr")
+   library(knitr)
+}
+if (!require("cowplot")) {
+   install.packages("cowplot")
+   library(cowplot)
+}
+if (!require("latex2exp")) {
+   install.packages("latex2exp")
+   library(latex2exp)
+}
+if (!require("plotly")) {
+   install.packages("plotly")
+   library(plotly)
+}
+if (!require("gapminder")) {
+   install.packages("gapminder")
+   library(gapminder)
+}
+if (!require("png")) {
+    install.packages("png")             # Install png package
+    library("png")
+}
+if (!require("RCurl")) {
+    install.packages("RCurl")             # Install RCurl package
+    library("RCurl")
+}
+if (!require("colourpicker")) {
+    install.packages("colourpicker")              
+    library("colourpicker")
+}
+if (!require("gganimate")) {
+    install.packages("gganimate")              
+    library("gganimate")
+}
+if (!require("gifski")) {
+    install.packages("gifski")              
+    library("gifski")
+}
+if (!require("magick")) {
+    install.packages("magick")              
+    library("magick")
+}
+if (!require("grDevices")) {
+    install.packages("grDevices")              
+    library("grDevices")
+}
+if (!require("jpeg")) {
+    install.packages("jpeg")              
+    library("jpeg")
+}
+# knitr::opts_knit$set(root.dir = "C:/Users/75CPENG/OneDrive - West Chester University of PA/Documents")
+# knitr::opts_knit$set(root.dir = "C:\\STA490\\w05")
+
+knitr::opts_chunk$set(echo = TRUE,       
+                      warning = FALSE,   
+                      result = TRUE,   
+                      message = FALSE)
+```
+
+```{r setup, include=FALSE}
+# code chunk specifies whether the R code, warnings, and output 
+# will be included in the output files.
+if (!require("tidyverse")) {
+   install.packages("tidyverse")
+   library(tidyverse)
+}
+if (!require("knitr")) {
+   install.packages("knitr")
+   library(knitr)
+}
+# knitr::opts_knit$set(root.dir = "C:/Users/75CPENG/OneDrive - West Chester University of PA/Documents")
+# knitr::opts_knit$set(root.dir = "C:\\STA490\\w05")
+
+knitr::opts_chunk$set(echo = TRUE,       
+                      warning = FALSE,   
+                      result = TRUE,   
+                      message = FALSE)
+```
+
+
+
+Reads in the Penguin data set and lists out all the data.
+```{r}
+pengdata0 = read.csv("https://raw.githubusercontent.com/zackwright27/sta553/main/data/w02-penguins.csv")
+head(pengdata0)
+
+```
+```{r}
+pengdata
+```
+
+
+```{r}
+#1
+pengdata0 <- na.omit(pengdata0)  
+pengdata1 <- pengdata0[which(pengdata0$species == "Adelie" | species == "Gentoo"),]
+pengdata2 <- pengdata1[which(pengdata1$island == "Biscoe" | pengdata1$island =="Torgenson"),]
+
+
+pengdata3 <- pengdata2$body_mass_g < 5000 & pengdata2$body_mass_g > 3500 
+
+pengdata3
+#This code chunk completes parts 1, 2 and 3
+```
+
+```{r}
+
+#  This code chunk excludes the variables X(observation ID), sex, year, and body_mass_g.
+#iris02 = iris[, -5]
+pengdata4 = pengdata[, -1]
+pengdata5 = pengdata[, -7]
+pengdata6 = pengdata[, -8]
+pengdata7 = pengdata[, -9]
+pengdata7
+
+```
+
+
+
+
+```{r, fig.align='center', fig.cap="Scatter plot of sepal length and sepal width"}
+plot(pengdata7$bill_length_mm, pengdata7$flipper_length_mm, 
+     xlab = "Bill Length in mm", 
+     ylab = "Flipper Length in mm", 
+     main = "Scatter Plot: Bill Length vs. Flipper Length")
+
+
+bill.length = pengdata7$bill_length_mm
+flipper.length = pengdata7$flipper_length_mm
+species = pengdata7$species
+body.mass = pengdata7$body_mass_g/3000
+
+
+## identifying the ID of Virginica
+virginca.id = which(species=="Adelie")  # value are case sensitive!
+setosa.id = which(species=="Gentoo")
+versicolor.id = which(species=="Chinstrap")
+
+
+## making an empty plot: type = "n" ==> no point
+plot(bill.length, flipper.length, main = "Bill Length vs Flipper Length", type = "n")
+
+
+##
+points(bill.length[virginca.id], flipper.length[virginca.id], pch = 18, col = "purple")
+points(bill.length[setosa.id], flipper.length[setosa.id], pch = 19, col = "orange")
+points(bill.length[versicolor.id], flipper.length[versicolor.id], pch = 20, col = "green")
+legend("topleft", c("Adelie", "Gentoo", "Chinstrap"), 
+                  col=c("purple", "orange", "green"),
+                  pch=c(18, 19, 20))
+
+
+## color code
+col.code = c(alpha("red",0.5),alpha("blue",0.5),alpha("cyan",0.5))
+## making an empty plot: type = "n" ==> no point
+plot(bill.length, flipper.length, main = "Bill Length vs Flipper Length", type = "n")
+## change the point size based body mass
+points(bill.length[virginca.id], flipper.length[virginca.id], 
+       pch = 19, col = col.code[1], cex = body.mass[virginca.id])
+points(bill.length[setosa.id], flipper.length[setosa.id], 
+       pch = 19, col = col.code[2], cex = body.mass[setosa.id])
+points(bill.length[versicolor.id], flipper.length[versicolor.id], 
+       pch = 19, col = col.code[3], cex = body.mass[versicolor.id])
+legend("topleft", c("Adelie", "Gentoo", "Chinstrap"), 
+                  col=col.code,
+                  pch=c(19, 19, 19))
+
+
+
+penguin.jpeg <- "https://raw.githubusercontent.com/zackwright27/sta553/main/Penguin%20for%20STA%20553.jpeg"
+my_peng <- readJPEG(getURLContent(penguin.jpeg))
+raster.peng <- as.raster(my_peng) 
+rasterImage(raster.peng,50,171,54,180)
+text(52,181, "The size is proportional to body mass", col = "orange", cex = 0.5)
+
+```
+$$
+
+\text{It appears that for the Adelie species, they have the smallest flippers and bill lengths. The Gentoo species have the longest flipper lengths with moderate bill lengths and the chinstrap species have smaller flipper lengths, but
+longer bill lengths. Some observations I can make are that adelie penguins appear to be the smallest species of 
+penguins in this data set and gentoo appear the largest. While gentoo and chinstrap have pretty similar bill lengths,
+the gentoo have much larger flipper lengths.
+
+$$
+
+
+
+
