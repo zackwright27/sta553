@@ -1,0 +1,324 @@
+---
+title: "HW3"
+author: "Zachary Wright"
+date: "3/12/2022"
+output: html_document
+---
+```{r setup, include=FALSE}
+# code chunk specifies whether the R code, warnings, and output 
+# will be included in the output files.
+if (!require("tidyverse")) {
+   install.packages("tidyverse")
+   library(tidyverse)
+}
+if (!require("knitr")) {
+   install.packages("knitr")
+   library(knitr)
+}
+if (!require("cowplot")) {
+   install.packages("cowplot")
+   library(cowplot)
+}
+if (!require("latex2exp")) {
+   install.packages("latex2exp")
+   library(latex2exp)
+}
+if (!require("plotly")) {
+   install.packages("plotly")
+   library(plotly)
+}
+if (!require("gapminder")) {
+   install.packages("gapminder")
+   library(gapminder)
+}
+if (!require("png")) {
+    install.packages("png")             # Install png package
+    library("png")
+}
+if (!require("RCurl")) {
+    install.packages("RCurl")             # Install RCurl package
+    library("RCurl")
+}
+if (!require("colourpicker")) {
+    install.packages("colourpicker")              
+    library("colourpicker")
+}
+if (!require("gganimate")) {
+    install.packages("gganimate")              
+    library("gganimate")
+}
+if (!require("gifski")) {
+    install.packages("gifski")              
+    library("gifski")
+}
+if (!require("magick")) {
+    install.packages("magick")              
+    library("magick")
+}
+if (!require("grDevices")) {
+    install.packages("grDevices")              
+    library("grDevices")
+}
+if (!require("jpeg")) {
+    install.packages("jpeg")              
+    library("jpeg")
+}
+# knitr::opts_knit$set(root.dir = "C:/Users/75CPENG/OneDrive - West Chester University of PA/Documents")
+# knitr::opts_knit$set(root.dir = "C:\\STA490\\w05")
+
+knitr::opts_chunk$set(echo = TRUE,       
+                      warning = FALSE,   
+                      result = TRUE,   
+                      message = FALSE)
+```
+
+
+
+```{r}
+# Downloaded Data sets #
+
+income =  read.csv("https://raw.githubusercontent.com/zackwright27/sta553/main/spread/income_per_person.csv")
+head(income)
+
+
+population = read.csv("https://raw.githubusercontent.com/zackwright27/sta553/main/spread/population_total.csv")
+head(population)
+
+
+countries = read.csv("https://raw.githubusercontent.com/zackwright27/sta553/main/spread/countries_total.csv")
+head(countries)
+
+
+life = read.csv("https://raw.githubusercontent.com/zackwright27/sta553/main/spread/life_expectancy_years.csv")
+head(life)
+
+```
+
+```{r}
+#install.packages("stringr")
+library(stringr)
+
+keyvar1 <- paste(countries$name, countries$region, sep=" ")
+countries$kayvar1 = keyvar1
+#countries
+
+last_string = word(keyvar1, -1)
+countries$region = last_string
+countries
+
+
+```
+
+
+
+```{r}
+#reshape life expectency data
+
+life.long <- life %>% gather(key = "Year", value = "LifeExpectency", - geo, na.rm = TRUE)
+life.long <- rename(life.long, Country = geo)
+life.long
+
+```
+
+
+```{r}
+#reshape income data
+
+income.long <- income %>% gather(key = "Year", value = "income", - geo, na.rm = TRUE)
+income.long <- rename(income.long, Country = geo)
+income.long
+
+```
+
+```{r}
+
+lifeExpincom <- merge(life.long, income.long)
+lifeExpincom
+```
+
+
+```{r}
+#reshape population data
+
+population.long <- population %>% gather(key = "Year", value = "population", - geo, na.rm = TRUE)
+population.long <- rename(population.long, Country = geo)
+keyvar <- paste(population.long$Country, population.long$Year, sep="")
+population.long$kayvar = keyvar
+population.long
+
+```
+
+
+```{r}
+#####
+newdata = merge(x=lifeExpincom, population.long)#, by.x = 'Country', by.y ='population', all = FALSE)
+newdata$last_year = str_sub(newdata$kayvar, -4)
+
+
+newdata1 = which(newdata$last_year == "2015")
+newdata11 = newdata[newdata1,]
+#newdata11
+
+newdata11 <- newdata11[c(1,3,4,5,7)]
+newdata11
+
+total <- merge(newdata11, countries)
+total
+
+reg <- paste(total$Country, total$name, sep=" ")
+total$new = reg
+total$new1 = str_sub(total$new, -4)
+reg
+
+
+library(stringr)
+
+last_string = word(reg, -1)
+total$reg = last_string
+total
+
+
+reg = which(total$new1 == "1750")
+final = total[reg,]
+final
+
+
+```
+
+
+
+```{r}
+
+car <- function(){
+  layout(  
+      ## graphic size
+      with = 700,
+      height = 700,
+      ### Title 
+      title =list(text = "Association Between Life Expectancy And Income For 2015", 
+                          font = list(family = "Times New Roman",  # HTML font family  
+                                        size = 16,
+                                       color = "orange")), 
+      ### legend
+      legend = list(title = list(text = 'Countries',
+                                 font = list(family = "Courier New",
+                                               size = 16,
+                                              color = "pink")),
+                    bgcolor = "black",
+                    bordercolor = "red",
+                    groupclick = "togglegroup",  # one of  "toggleitem" AND "togglegroup".
+                    orientation = "v"  # Sets the orientation of the legend.
+                    
+                    ),
+      ## margin of the plot
+      margin = list(
+              b = 120,
+              l = 50,
+              t = 120,
+              r = 50
+      ),
+      ## Background
+      plot_bgcolor ='#f7f7f7', 
+      ## Axes labels
+             xaxis = list( 
+                    title=list(text = 'Life Expectancy',
+                               font = list(family = 'Arial')),
+                    zerolinecolor = 'blue', 
+                    zerolinewidth = 2, 
+                    gridcolor = 'green'), 
+            yaxis = list( 
+                    title=list(text = 'Income',
+                               font = list(family = 'Arial')),
+                    zerolinecolor = 'purple', 
+                    zerolinewidth = 2, 
+                    gridcolor = 'white'),
+       ## annotations
+       annotations = list(  
+                     x = 80,   # between 0 and 1. 0 = left, 1 = right
+                     y = 60,   # between 0 and 1, 0 = bottom, 1 = top
+                  font = list(size = 12,
+                              color = "darkred"),   
+                  text = "The point size is population of country",   
+                  xref = "paper",  # "container" spans the entire `width` of the plot. 
+                                   # "paper" refers to the width of the plotting area only.  
+                  yref = "paper",  #  same as xref
+               xanchor = "center", #  horizontal alignment with respect to its x position
+               yanchor = "bottom", #  similar to xanchor  
+             showarrow = FALSE  ,
+             ## using the following hovertemplate() to add the information of the
+     ## two numerical variable to the hover text.
+     hovertemplate = paste('<i><b>Income<b></i>: %{y}',
+                           '<br><b>lifeExpe</b>:  %{x}',
+                           '<br><b>%{Country}</b>'),
+           )
+  )
+}
+
+```
+
+
+```{r}
+plot_ly(
+    data = newdata11,
+    x = ~LifeExpectency,  # Horizontal axis 
+    y = ~income,   # Vertical axis 
+    color = ~factor(Country),  # must be a numeric factor
+     text = ~newdata11$population,  # show the Country in the hover text
+
+     alpha  = 0.9,
+     size = newdata11$population,
+     type = "scatter",
+     mode = "markers",
+        ## two numerical variable to the hover text.
+     hovertemplate = paste('<i><b>Income<b></i>: %{y}',
+                           '<br><b>lifeExp</b>:  %{x}')
+   ) 
+```
+
+
+
+```{r}
+library(gapminder)
+
+lamp <- ggplot(gapminder, aes(x = newdata11$income, 
+                           y = newdata11$LifeExpectency, 
+                           size = newdata11$population,
+                           colour = newdata11$region)) +
+        geom_point(aes(size = population, ids = region ),
+                   show.legend = FALSE, 
+                   alpha = 0.7) +
+        scale_color_viridis_d() +      # color pallets 
+        scale_size(range = c(2, 12)) +
+        scale_x_log10() +
+        labs(x = "GDP per capita", 
+             y = "Life expectancy") +
+        ## gganimate command
+       transition_time(year)
+## 
+anim_save("LifeExp.gif", lamp)
+
+## I kept having problems with merging the country data set with the others. I was able to get the keys working for the other data sets, but this one I spent a while trying to figure out.
+
+```
+
+
+
+
+```{r}
+# read in gas data
+gas.gas <- read.csv("https://raw.githubusercontent.com/zackwright27/sta553/main/POC.csv")
+
+
+# random sample of 500
+
+sample <- gas.gas[sample(nrow(gas.gas), 500), ]
+sample
+```
+
+```{r}
+#total <- merge(newdata11, countries)
+#keyvar2 <- paste(total$country, countries$region, sep=" ")
+#keyvar2
+#total$ball = keyvar2
+#total
+```
